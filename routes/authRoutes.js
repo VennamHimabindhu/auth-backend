@@ -4,6 +4,9 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 router.post("/login", async (req, res) => {
   console.log("📥 Login request received:", req.body); // ✅ log
+if (!req.body.email || !req.body.password) {
+  console.log("❌ Missing email or password in request");
+}
 
   try {
     const { email, password } = req.body;
