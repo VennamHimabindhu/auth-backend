@@ -3,14 +3,17 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 router.post("/login", async (req, res) => {
-  console.log("📥 Login request received:", req.body); // ✅ log
-if (!req.body.email || !req.body.password) {
-  console.log("❌ Missing email or password in request");
-}
+  console.log("📥 Login request received");
+  console.log("📨 Received login request body:", req.body);
+
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    console.log("❌ Missing email or password in request");
+    return res.status(400).json({ error: "Email and password are required" });
+  }
 
   try {
-    const { email, password } = req.body;
-
     const user = await User.findOne({ email });
     if (!user) {
       console.log("❌ User not found");
@@ -31,27 +34,26 @@ if (!req.body.email || !req.body.password) {
   }
 });
 router.post("/register", async (req, res) => {
-  console.log("📥 Registration request received:", req.body);
+  console.log("📥 Registration request received");
+  console.log("📨 Registration request body:", req.body);
 
   try {
     const { username, email, password, role } = req.body;
 
-    // Basic validation
     if (!username || !email || !password || !role) {
+      console.log("❌ Missing fields in request");
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log("❌ User already exists with email:", email);
       return res.status(400).json({ error: "User already exists" });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Save user
     const newUser = new User({
       username,
       email,
@@ -61,13 +63,14 @@ router.post("/register", async (req, res) => {
 
     await newUser.save();
 
-    console.log("✅ User registered successfully");
+    console.log("✅ User registered successfully:", newUser.email);
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     console.error("❌ Server error during registration:", err);
     res.status(500).json({ error: "Server error during registration" });
   }
 });
+
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   // example logic
