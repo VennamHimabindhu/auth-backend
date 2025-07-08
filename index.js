@@ -9,21 +9,15 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Allow requests from any origin (public API)
-app.use(cors()); // ← this allows all origins by default
-
+app.use(cors());
 app.use(express.json());
 
-// ✅ Import and use auth routes
 const authRoutes = require("./routes/authRoutes");
-app.use("/api", authRoutes); // e.g., /api/login
-
-// ✅ Health check route
+app.use("/api", authRoutes); 
 app.get("/", (req, res) => {
   res.send("✅ Backend is working");
 });
 
-// ✅ Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB Connected");
