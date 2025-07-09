@@ -3,6 +3,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/User");
+
+// @route   POST /api/auth/register
+// @desc    Register a new user
 router.post("/register", async (req, res) => {
   const { username, email, password, role } = req.body;
 
@@ -33,15 +36,14 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login route
+// @route   POST /api/auth/login
+// @desc    Login user and return token
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Email and password are required" });
+      return res.status(400).json({ error: "Email and password are required" });
     }
 
     const user = await User.findOne({ email });
@@ -75,7 +77,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Forgot password (dummy)
+// @route   POST /api/auth/forgot-password
+// @desc    Dummy forgot password logic
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
 
@@ -83,7 +86,7 @@ router.post("/forgot-password", async (req, res) => {
     return res.status(400).json({ error: "Email is required" });
   }
 
-  // In a real app, you would send a reset password email
+  // In real app, send reset link
   res.status(200).json({ message: "Reset link sent (simulated)" });
 });
 
